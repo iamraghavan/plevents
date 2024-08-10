@@ -1,38 +1,33 @@
-<!-- resources/views/admin/auth/login.blade.php -->
+@extends('admin.layouts.admin')
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Login</title>
-    <link rel="stylesheet" href="{{ asset('css/app.css') }}">
-</head>
-<body>
-    <div class="login-container">
-        <h2>Admin Login</h2>
-        @if($errors->any())
-            <div class="alert alert-danger">
-                @foreach ($errors->all() as $error)
-                    <p>{{ $error }}</p>
-                @endforeach
-            </div>
+@section('admin_content')
+<div class="container">
+    <h2>Login</h2>
+    <form method="POST" action="{{ route('auth.admin-login') }}">
+        @csrf
+
+        <div class="form-group">
+            <label for="email">Email address</label>
+            <input type="email" class="form-control" id="email" name="email" required>
+            @error('email')
+                <div class="alert alert-danger mt-2">{{ $message }}</div>
+            @enderror
+        </div>
+
+        <div class="form-group">
+            <label for="password">Password</label>
+            <input type="password" class="form-control" id="password" name="password" required>
+            @error('password')
+                <div class="alert alert-danger mt-2">{{ $message }}</div>
+            @enderror
+        </div>
+
+        <button type="submit" class="btn btn-primary">Login</button>
+
+        @if ($errors->has('email'))
+            <div class="alert alert-danger mt-3">{{ $errors->first('email') }}</div>
         @endif
-        <form action="{{ route('auth.admin-login') }}" method="POST">
-            @csrf
-            <div class="form-group">
-                <label for="email">Email:</label>
-                <input type="email" id="email" name="email" required>
-            </div>
-            <div class="form-group">
-                <label for="password">Password:</label>
-                <input type="password" id="password" name="password" required>
-            </div>
-            <button type="submit">Login</button>
-        </form>
+    </form>
 
-
-
-    </div>
-</body>
-</html>
+</div>
+@endsection

@@ -3,22 +3,22 @@
 namespace App\View\Components;
 
 use Illuminate\View\Component;
+use App\Models\Session;
 
 class EventSchedule extends Component
 {
-    public $eventDate;
-    public $eventTitle;
-    public $registerUrl;
+    public $events;
 
-    public function __construct($eventDate, $eventTitle, $registerUrl)
+    public function __construct()
     {
-        $this->eventDate = $eventDate;
-        $this->eventTitle = $eventTitle;
-        $this->registerUrl = $registerUrl;
+        // Fetch the three most recent sessions from the database
+        $this->events = Session::orderBy('date', 'desc')->take(3)->get();
     }
 
     public function render()
     {
-        return view('components.event-schedule');
+        return view('components.event-schedule', [
+            'events' => $this->events,
+        ]);
     }
 }
