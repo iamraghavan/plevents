@@ -40,5 +40,13 @@
 
         </div>
         @endforeach
+
+        <!-- View More Event Schedule Button -->
+        <div class="text-center mt-4">
+            <a href="{{ route('events.index') }}" class="default-btn">
+                View More Event Schedule
+                <span></span>
+            </a>
+        </div>
     </div>
 </div>

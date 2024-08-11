@@ -24,15 +24,12 @@ Route::middleware(['auth:admin'])->group(function () {
         Route::get('/{session}/{token}', [SessionController::class, 'show'])->name('sessions.show');
         Route::get('/{session}/edit/{token}', [SessionController::class, 'edit'])->name('sessions.edit');
         Route::put('/update/{session_id}', [SessionController::class, 'update'])->name('sessions.update');
-
-
         Route::delete('/{session}', [SessionController::class, 'destroy'])->name('sessions.destroy');
     });
-
-
-
 
     Route::post('/admin/logout/session', [AdminController::class, 'logout'])->name('admin.logout');
 });
 
 Route::get('/', [PageControllers::class, 'home'])->name('index');
+Route::get('/events/session', [PageControllers::class, 'EventSession'])->name('events.index');
+Route::get('/events/sessions', [PageControllers::class, 'ab'])->name('events.show');

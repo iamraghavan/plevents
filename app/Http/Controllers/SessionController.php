@@ -116,8 +116,8 @@ class SessionController extends Controller
             'title' => 'required|string|max:255',
             'description' => 'required|string',
             'conducted_by' => 'required|string',
-            'start_time' => 'required|date_format:H:i:s',
-            'end_time' => 'required|date_format:H:i:s',
+            'start_time' => 'required|date_format:h:i A', // 12-hour format with AM/PM
+            'end_time' => 'required|date_format:h:i A|after:start_time', // 12-hour format with AM/PM
             'date' => 'required|date',
             'location' => 'required|string',
             'venue' => 'required|string',
@@ -126,6 +126,12 @@ class SessionController extends Controller
             'meeting_url' => 'nullable|url',
             'price_type' => 'required|string',
             'amount' => 'nullable|numeric',
+        ]);
+
+        // Convert start_time and end_time to 24-hour format before saving
+        $request->merge([
+            'start_time' => \Carbon\Carbon::createFromFormat('h:i A', $request->input('start_time'))->format('H:i:s'),
+            'end_time' => \Carbon\Carbon::createFromFormat('h:i A', $request->input('end_time'))->format('H:i:s'),
         ]);
 
         // Find the session by ID
@@ -137,24 +143,13 @@ class SessionController extends Controller
                 ->withErrors(['session' => 'Session not found.']);
         }
 
-        // Log session data before update
-        Log::info('Session Data Before Update:', $session->toArray());
-
         // Update the session data
         $session->update($request->all());
-
-        // Log session data after update
-        Log::info('Session Data After Update:', $session->toArray());
 
         // Redirect back with success message
         return redirect()->route('sessions.index', ['token' => $request->session()->get('admin_auth_token')])
             ->with('success', 'Session updated successfully.');
     }
-
-
-
-
-
 
 
     public function destroy(Session $session)
