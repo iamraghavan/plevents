@@ -178,3 +178,5 @@ class SessionController extends Controller
         ]);
     }
 }
+
+// update successfully
