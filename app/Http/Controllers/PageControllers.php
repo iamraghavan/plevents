@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Session;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
+use App\Helpers\SlugHelper;
 
 class PageControllers extends Controller
 {
@@ -60,5 +62,31 @@ class PageControllers extends Controller
     {
 
         return view('pages.get-events');
+    }
+
+    public function show($countryCode = null, $id)
+    {
+        // Log the incoming parameters
+        Log::info('Fetching event with ID: ' . $id);
+
+        // Check if ID is a valid integer
+        if (!is_numeric($id) || intval($id) <= 0) {
+            Log::error('Invalid ID provided: ' . $id);
+            abort(404, 'Invalid ID provided.');
+        }
+
+        // Find the event by ID
+        $event = Session::find($id);
+
+        // Log the result of the query
+        Log::info('Event found: ' . ($event ? 'Yes' : 'No'));
+
+        // Check if the event exists
+        if (!$event) {
+            Log::error('Event not found for ID: ' . $id);
+            abort(404, 'Sorry, the event could not be found.');
+        }
+
+        return view('pages.show-event-details', compact('event'));
     }
 }

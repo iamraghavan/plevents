@@ -9,7 +9,9 @@
         ['label' => 'Events']
     ]"
 />
-
+@php
+  use App\Helpers\SlugHelper;
+@endphp
 <div class="events-schedules-area ptb-100">
     <div class="container">
         <div class="row">
@@ -160,10 +162,19 @@
                                     </h3>
                                     <p>{{ $event->description }}</p>
 
-                                    <div class="bottom-content">
-                                        <div class="info">
-                                            <h4>{{ $event->conducted_by }}</h4>
+<hr>
+
+                                    <p>{{ $event->conducted_by }}</p>
                                             <p>{{ $event->location }} - {{ $event->venue }}</p>
+                                            <hr>
+                                    <div class="bottom-content">
+                                        <div class="">
+                                            <a href="{{ route('events.show', ['countryCode' => 'in', 'id' => $event->id]) }}" class="book-btn-one">
+                                                <i class="bx bx-arrow-to-right"></i> View Event
+                                            </a>
+
+
+
                                         </div>
 
                                         <div class="book-btn">
@@ -189,4 +200,27 @@
     </div>
 </div>
 
+
+
+
+
+
 @endsection
+
+<style>
+    .form-group .form-control {
+    height: auto;
+    color: #a0a6ab;
+    border: 1px solid #ebebeb;
+    background-color: #ffffff;
+    display: block;
+    width: 100%;
+    border-radius: 10px;
+    padding: 25px;
+    transition: 0.6s;
+    font-size: 15px;
+    font-weight: 400;
+    outline: 0;
+    font-family: "Poppins", sans-serif;
+}
+</style>
