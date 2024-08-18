@@ -6,6 +6,7 @@ use App\Models\Session;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
+use Carbon\Carbon;
 
 class SessionController extends Controller
 {
@@ -57,9 +58,47 @@ class SessionController extends Controller
 
     public function store(Request $request)
     {
-        $this->validateRequest($request);
+        // Validate the request data
+        $validatedData = $request->validate([
+            'title' => 'required|string|max:255',
+            'slug' => 'required|string|max:255',
+            'description' => 'nullable|string',
+            'conducted_by' => 'required|string|max:255',
+            'date' => 'required|date',
+            'start_time' => 'required|string',
+            'end_time' => 'required|string',
+            'location' => 'nullable|string|max:255',
+            'venue' => 'nullable|string|max:255',
+            'department' => 'required|string|max:255',
+            'mode' => 'required|string',
+            'meeting_url' => 'nullable|url',
+            'price_type' => 'required|string',
+            'amount' => 'nullable|numeric',
+        ]);
 
-        Session::create($request->all());
+        // Convert the start_time and end_time to the correct format
+        $startTime = Carbon::createFromFormat('h:i A', $request->input('start_time'))->format('H:i:s');
+        $endTime = Carbon::createFromFormat('h:i A', $request->input('end_time'))->format('H:i:s');
+
+        // Store the session
+        Session::create([
+            'title' => $validatedData['title'],
+            'slug' => $validatedData['slug'],
+            'description' => $validatedData['description'],
+            'conducted_by' => $validatedData['conducted_by'],
+            'date' => $validatedData['date'],
+            'start_time' => $startTime,
+            'end_time' => $endTime,
+            'location' => $validatedData['location'],
+            'venue' => $validatedData['venue'],
+            'department' => $validatedData['department'],
+            'mode' => $validatedData['mode'],
+            'meeting_url' => $validatedData['meeting_url'],
+            'price_type' => $validatedData['price_type'],
+            'amount' => $validatedData['amount'] ?? 0, // Set amount to 0 if not provided
+        ]);
+
+        // Redirect to a specific page or return a response
         return redirect()->route('sessions.index', ['token' => $request->session()->get('admin_auth_token')])
             ->with('success', 'Session created successfully.');
     }

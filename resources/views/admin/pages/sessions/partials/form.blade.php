@@ -8,6 +8,12 @@
                 </div>
 
                 <div class="form-group">
+                    <label for="slug">Slug (URL)</label>
+                    <input type="text" name="slug" id="slug" class="form-control" value="{{ old('slug', $session->slug) }}" readonly>
+                </div>
+
+
+                <div class="form-group">
                     <label for="conducted_by">Conducted By</label>
                     <input type="text" name="conducted_by" id="conducted_by" class="form-control" value="{{ old('conducted_by', $session->conducted_by) }}">
                 </div>
@@ -140,4 +146,16 @@
         modeSelect.addEventListener('change', toggleMeetingUrlField);
         toggleMeetingUrlField(); // Initial call to set state based on initial value
     });
+
+    document.getElementById('title').addEventListener('input', function() {
+    var title = this.value;
+    var slug = title.toLowerCase()
+        .replace(/[^a-z0-9\s-]/g, '')  // Remove special characters
+        .trim()                        // Remove leading/trailing spaces
+        .replace(/\s+/g, '-')          // Replace spaces with hyphens
+        .replace(/-+/g, '-');          // Replace multiple hyphens with a single one
+
+    document.getElementById('slug').value = slug;
+});
+
 </script>

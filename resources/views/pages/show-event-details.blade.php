@@ -16,26 +16,28 @@
                 <div class="event-details">
                     <div class="event-details-header">
                         <a href="{{ route('events.index') }}" class="back-all-event"><i class="bx bx-chevron-left"></i> Back To All Events</a>
-                        <h3>{{ $event->title }}</h3>
+                        <h3>{{ $eventDetails->title }}</h3>
                         <ul class="event-info-meta">
-                            <li><i class="bx bx-calendar"></i> {{ \Carbon\Carbon::parse($event->date)->format('d F, Y') }}</li>
-                            <li><i class="bx bx-time"></i> {{ \Carbon\Carbon::parse($event->start_time)->format('H:i') }} - {{ \Carbon\Carbon::parse($event->end_time)->format('H:i') }}</li>
+                            <li><i class="bx bx-calendar"></i> {{ \Carbon\Carbon::parse($eventDetails->date)->format('d F, Y') }}</li>
+                            <li><i class="bx bx-time"></i> {{ \Carbon\Carbon::parse($eventDetails->start_time)->format('H:i') }} - {{ \Carbon\Carbon::parse($eventDetails->end_time)->format('H:i') }}</li>
                         </ul>
                     </div>
 
                     <div class="event-details-image">
-                        <img src="{{ asset('assets/images/events.webp') }}" alt="{{ $event->title }}">
+                        <img src="{{ asset('assets/images/events.webp') }}" alt="{{ $eventDetails->title }}">
                     </div>
 
                     <div class="event-details-desc">
-                        <p>{{ $event->description }}</p>
+                        <p>{{ $eventDetails->description }}</p>
                     </div>
 
+
+
                     <div class="event-info-links">
-                        @if($event->meeting_url)
-                            <a href="{{ $event->meeting_url }}" target="_blank">Join Meeting</a>
-                        @endif
+                        <a href="https://calendar.google.com/calendar/render?action=TEMPLATE&text={{ urlencode($eventDetails->title) }}&dates={{ \Carbon\Carbon::parse($eventDetails->date . ' ' . $eventDetails->start_time)->format('Ymd\THis\Z') }}/{{ \Carbon\Carbon::parse($eventDetails->date . ' ' . $eventDetails->end_time)->format('Ymd\THis\Z') }}&details={{ urlencode($eventDetails->description) }}&location={{ urlencode($eventDetails->venue) }}" target="_blank">+ Google Calendar</a>
+                        {{-- <a href="#">+ iCal Export</a> --}}
                     </div>
+
 
                     <div class="post-navigation">
                         {{-- <div class="navigation-links">
@@ -61,14 +63,19 @@
                         <h3 class="widget-title">Details</h3>
 
                         <ul>
-                            <li><span>Department:</span> {{ $event->department }}</li>
-                            <li><span>Mode:</span> {{ $event->mode }}</li>
-                            <li><span>Location:</span> {{ $event->location }}</li>
-                            <li><span>Venue:</span> {{ $event->venue }}</li>
-                            <li><span>Price Type:</span> {{ $event->price_type }}</li>
-                            <li><span>Amount:</span> {{ $event->amount }}</li>
-                            <li><span>Created At:</span> {{ \Carbon\Carbon::parse($event->created_at)->format('d F, Y H:i') }}</li>
-                            <li><span>Updated At:</span> {{ \Carbon\Carbon::parse($event->updated_at)->format('d F, Y H:i') }}</li>
+                            <li><span>Department:</span> {{ $eventDetails->department }}</li>
+                            <li><span>Mode:</span> {{ $eventDetails->mode }}</li>
+                            <li><span>Location:</span> {{ $eventDetails->location }}</li>
+                            <li><span>Venue:</span> {{ $eventDetails->venue }}</li>
+                            @if($eventDetails->price_type !== 'Idle')
+    <li><span>Price Type:</span> {{ $eventDetails->price_type }}</li>
+@else
+    <li><span>Price Type:</span> Paid</li>
+@endif
+
+                            <li><span>Amount:</span> {{ $eventDetails->amount }}</li>
+                            <li><span>Created At:</span> {{ \Carbon\Carbon::parse($eventDetails->created_at)->format('d F, Y H:i') }}</li>
+                            <li><span>Updated At:</span> {{ \Carbon\Carbon::parse($eventDetails->updated_at)->format('d F, Y H:i') }}</li>
                         </ul>
                     </div>
 
@@ -76,7 +83,7 @@
                         <h3 class="widget-title">Organizer</h3>
 
                         <ul>
-                            <li><span>Conducted By:</span> {{ $event->conducted_by }}</li>
+                            <li><span>Conducted By:</span> {{ $eventDetails->conducted_by }}</li>
                         </ul>
                     </div>
 
@@ -84,10 +91,24 @@
                         <h3 class="widget-title">Venue</h3>
 
                         <ul>
-                            <li><a href="https://www.google.com/maps/search/?api=1&query={{ urlencode($event->venue) }}" target="_blank">{{ $event->venue }}</a></li>
-                            <li><a href="https://www.google.com/maps/search/?api=1&query={{ urlencode($event->venue) }}" target="_blank">+ Google Map</a></li>
+                            <li><a href="https://www.google.com/maps/search/?api=1&query={{ urlencode($eventDetails->venue) }}" target="_blank">{{ $eventDetails->venue }}</a></li>
+                            <li><a href="https://www.google.com/maps/search/?api=1&query={{ urlencode($eventDetails->venue) }}" target="_blank">+ Google Map</a></li>
                         </ul>
                     </div>
+
+                    <div class="widget widget_event_details">
+                        <h3 class="widget-title">Register Here</h3>
+
+                        <div class="event-details">
+                            <div class="event-info-links">
+                                <a href="" target="_blank">Register</a>
+
+                            </div>
+                        </div>
+
+                    </div>
+
+
                 </aside>
             </div>
         </div>

@@ -169,9 +169,10 @@
                                             <hr>
                                     <div class="bottom-content">
                                         <div class="">
-                                            <a href="{{ route('events.show', ['countryCode' => 'in', 'id' => $event->id]) }}" class="book-btn-one">
+                                            <a href="{{ route('events.show', ['slug' => $event->slug]) }}" class="book-btn-one">
                                                 <i class="bx bx-arrow-to-right"></i> View Event
                                             </a>
+
 
 
 

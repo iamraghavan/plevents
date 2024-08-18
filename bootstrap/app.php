@@ -16,7 +16,7 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware) {
         $middleware->append(RedirectIfAuthenticated::class);
-        $middleware->append(CountryCodeMiddleware::class);
+        // $middleware->append(CountryCodeMiddleware::class);
     })
     ->withExceptions(function (Exceptions $exceptions) {
         //

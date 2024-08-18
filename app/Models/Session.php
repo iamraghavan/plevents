@@ -13,6 +13,7 @@ class Session extends Model
 
     protected $fillable = [
         'title',
+        'slug',
         'description',
         'conducted_by',
         'start_time',
