@@ -12,6 +12,16 @@ Route::get('/events/session', [PageControllers::class, 'EventSession'])->name('e
 Route::get('/events/sessions', [PageControllers::class, 'ab'])->name('events.show');
 Route::get('/events/sessions/{slug}', [PageControllers::class, 'show'])->name('events.show');
 
+use App\Http\Controllers\PaymentController;
+
+
+Route::get('/payment', [PaymentController::class, 'showPaymentForm'])->name('payment.form');
+Route::post('/payment', [PaymentController::class, 'makePayment'])->name('payment.make');
+Route::post('/payment/success', [PaymentController::class, 'handlePayment'])->name('payment.handle');
+Route::get('/payment/success', [PaymentController::class, 'paymentSuccess'])->name('payment.success');
+Route::get('/payment/failure', [PaymentController::class, 'paymentFailure'])->name('payment.failure');
+
+
 // Admin routes
 Route::middleware('guest:admin')->group(function () {
     Route::get('/admin/login', [AdminController::class, 'showLoginForm'])->name('login');
