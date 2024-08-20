@@ -2,9 +2,15 @@
 
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\auth\VerifyController;
+use App\Http\Controllers\GoogleController;
 use App\Http\Controllers\PageControllers;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\SessionController;
+
+
+// Route::post('/auth/google/callback', [GoogleController::class, 'handleGoogleCallback'])->name('google.callback');
+
+Route::post('/auth/google/callback', [GoogleController::class, 'handleGoogleCallback'])->name('google.callback');
 
 
 Route::get('/', [PageControllers::class, 'home'])->name('index');

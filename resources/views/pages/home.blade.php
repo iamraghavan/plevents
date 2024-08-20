@@ -1,7 +1,11 @@
 @extends('layout.app')
 @section('content')
 
+
+
 <x-hero-section />
+
+
 
 
 <div class="about-us-area ptb-100">
