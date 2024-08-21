@@ -2,16 +2,30 @@
 
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\auth\VerifyController;
+use App\Http\Controllers\EventRegistration;
 use App\Http\Controllers\GoogleController;
 use App\Http\Controllers\PageControllers;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\SessionController;
-
+use Illuminate\Support\Facades\Auth;
 
 // Route::post('/auth/google/callback', [GoogleController::class, 'handleGoogleCallback'])->name('google.callback');
 
 Route::post('/auth/google/callback', [GoogleController::class, 'handleGoogleCallback'])->name('google.callback');
 
+Route::middleware(['web'])->group(function () {
+    Route::get('/check-auth', function () {
+        $authenticated = Auth::guard('web')->check();
+        return response()->json(['authenticated' => $authenticated]);
+    });
+});
+
+
+Route::get('/events/sessions/register/{id}', [EventRegistration::class, 'getRegister'])->name('register.page');
+Route::post('/events/sessions/register/payment', [EventRegistration::class, 'makePayment'])->name('event.register.payment');
+Route::post('/payment/success', [EventRegistration::class, 'handlePayment'])->name('payment.handle');
+Route::get('/payment/success/{id}', [EventRegistration::class, 'paymentSuccess'])->name('payment.success');
+Route::get('/payment/failure', [EventRegistration::class, 'paymentFailure'])->name('payment.failure');
 
 Route::get('/', [PageControllers::class, 'home'])->name('index');
 Route::get('/events/session', [PageControllers::class, 'EventSession'])->name('events.index');

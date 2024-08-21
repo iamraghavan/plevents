@@ -45,6 +45,9 @@
 
 
         <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.14.1/dist/cdn.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+
+
 
         <script src="{{ asset("/assets/js/jquery.min.js") }}"></script>
         <script src="{{ asset("/assets/js/bootstrap.bundle.min.js") }}"></script>
