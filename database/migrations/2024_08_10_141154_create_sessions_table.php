@@ -8,7 +8,7 @@ class CreateSessionsTable extends Migration
 {
     public function up()
     {
-        Schema::create('sessions_events', function (Blueprint $table) {
+        Schema::create(' ', function (Blueprint $table) {
             $table->id();
             $table->string('title');
             $table->text('description');

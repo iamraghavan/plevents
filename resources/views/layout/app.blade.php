@@ -33,7 +33,7 @@
 
 
 
-        <x-google-sign-in />
+        {{-- <x-google-sign-in /> --}}
 
 
         <x-header />

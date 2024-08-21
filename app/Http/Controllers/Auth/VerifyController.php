@@ -18,14 +18,25 @@ class VerifyController extends Controller
 
         $credentials = $request->only('email', 'password');
 
+        // Attempt to authenticate the user
         if (Auth::guard('admin')->attempt($credentials)) {
-
             $user = Auth::guard('admin')->user();
-            $hashedValue = Hash::make($user->email . now());
-            $encodedToken = base64_encode($hashedValue);
-            $request->session()->put('admin_auth_token', $encodedToken);
 
-            return redirect()->route('admin.dashboard', ['token' => $encodedToken]);
+            // Check if the user is an admin
+            if ($user->is_admin) {
+                $hashedValue = Hash::make($user->email . now());
+                $encodedToken = base64_encode($hashedValue);
+                $request->session()->put('admin_auth_token', $encodedToken);
+
+
+                return redirect()->route('admin.dashboard', ['token' => $encodedToken, 'login_success' => 'true']);
+            } else {
+                // If the user is not an admin, log them out and show an error
+                Auth::guard('admin')->logout();
+                return back()->withErrors([
+                    'restricted_area' => 'Only authorized Event Organizers have access to this area. Please ensure you have the correct permissions.',
+                ]);
+            }
         }
 
         // Authentication failed, redirect back with an error message

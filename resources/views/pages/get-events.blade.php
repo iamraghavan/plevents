@@ -179,7 +179,7 @@
                                         </div>
 
                                         <div class="book-btn">
-                                            <a href="{{ $event->mode == 'online' ? $event->meeting_url : route('index') }}" class="book-btn-one">
+                                            <a href="{{  }}" class="book-btn-one">
                                                 <i class="bx bx-arrow-to-right"></i>
                                                 {{ $event->mode == 'online' ? 'Join Now' : 'Book Now' }}
                                             </a>
