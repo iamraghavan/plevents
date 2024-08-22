@@ -100,11 +100,15 @@
                         <h3 class="widget-title">Register Here</h3>
 
                     <!-- Button to Open Google Sign-In -->
-<div class="event-details">
-    <div class="event-info-links">
-        <a href="#" id="book-btn">Register</a>
-    </div>
-</div>
+                    <div class="event-details">
+                        <div class="event-info-links">
+                            <form action="{{ route('register.page', ['id' => $eventDetails->id]) }}" method="GET">
+                                @csrf
+                                <input type="hidden" name="event_id" value="{{ $eventDetails->id }}">
+                                <button type="submit" class="default-btn" id="book-btn">Register</button>
+                            </form>
+                        </div>
+                    </div>
 
 
 <!-- Include Google API script -->
@@ -126,90 +130,6 @@
 <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 <script src="https://accounts.google.com/gsi/client" async defer></script>
 
-<script>
-    const eventID = '{{ $eventDetails->id }}'; // Pass event ID
-
-    // Check authentication status when clicking the register button
-    document.getElementById('book-btn').addEventListener('click', function(event) {
-        event.preventDefault(); // Prevent the default link behavior
-
-        axios.get('/check-auth')
-            .then(response => {
-                if (response.data.authenticated) {
-                    window.location.href = `/events/sessions/register/${eventID}`;
-                } else {
-                    // Initialize Google One Tap
-                    initializeGoogleOneTap();
-                }
-            })
-            .catch(error => {
-                console.error('Error checking authentication:', error);
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Oops...',
-                    text: 'There was an issue checking authentication. Please try again.',
-                });
-            });
-    });
-
-    // Initialize Google One Tap
-    function initializeGoogleOneTap() {
-        google.accounts.id.initialize({
-            client_id: '3531307553-8o13atm3riuujgpa862t852k1hvqocqa.apps.googleusercontent.com',
-            callback: handleCredentialResponse
-        });
-
-        google.accounts.id.prompt(); // Show the One Tap UI
-    }
-
-    // Handle Google One Tap response
-    function handleCredentialResponse(response) {
-        if (response.credential) {
-            const credential = response.credential;
-            const payload = JSON.parse(atob(credential.split('.')[1]));
-
-            // Extract user details
-            const googleUid = payload.sub;
-            const firstName = payload.given_name;
-            const lastName = payload.family_name;
-            const email = payload.email;
-            const profilePicture = payload.picture;
-
-            // Store the UID in local storage
-            localStorage.setItem('googleUid', googleUid);
-
-            // Send the extracted details to the backend
-            axios.post('/auth/google/callback', {
-                google_uid: googleUid,
-                first_name: firstName,
-                last_name: lastName,
-                email: email,
-                profile_picture: profilePicture
-            })
-            .then(response => {
-                if (response.data.success) {
-                    window.location.href = `/events/sessions/register/${eventID}`;
-                } else {
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Oops...',
-                        text: 'There was an issue logging in. Please try again.',
-                    });
-                }
-            })
-            .catch(error => {
-                console.error('Error logging in:', error);
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Oops...',
-                    text: 'There was an issue logging in. Please try again.',
-                });
-            });
-        } else {
-            console.error('No credential received from Google One Tap.');
-        }
-    }
-</script>
 
 
 @endsection
