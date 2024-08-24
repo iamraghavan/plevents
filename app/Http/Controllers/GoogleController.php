@@ -28,10 +28,11 @@ class GoogleController extends Controller
     }
 
 
-    protected function redirectToGoogle()
+    public function redirectToGoogle()
     {
         return Socialite::driver('google')->redirect();
     }
+
 
     public function handleGoogleCallback(Request $request)
     {

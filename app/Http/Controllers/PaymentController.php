@@ -8,8 +8,8 @@ use Illuminate\Support\Facades\Mail;
 
 class PaymentController extends Controller
 {
-    private $razorpayId = 'rzp_test_4E1WJKTYUBg6p4';
-    private $razorpayKey = 'jIfvIXHN2sWPiD0J1lt76oFS';
+    private $razorpayId = 'rzp_test_xBOnn1if1rXI8H';
+    private $razorpayKey = 'KcM9f04lMUjaQfZplvN0b4PU';
 
     public function showPaymentForm()
     {
@@ -22,11 +22,11 @@ class PaymentController extends Controller
 
         $order = $api->order->create([
             'receipt' => 'order_rcptid_11',
-            'amount' => 100, // Amount in paise (INR 500.00)
+            'amount' => 10000, // Amount in paise (INR 100.00)
             'currency' => 'INR'
         ]);
 
-        return view('razorpay-checkout', ['order' => $order->id, 'amount' => 100]);
+        return view('razorpay-checkout', ['order' => $order->id, 'amount' => 10000]);
     }
 
     public function handlePayment(Request $request)

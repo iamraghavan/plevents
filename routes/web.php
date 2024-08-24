@@ -9,26 +9,30 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\SessionController;
 use Illuminate\Support\Facades\Auth;
 
+$ip = session('ip');
+$country = session('country');
+$region = session('region');
+
+
+
 // Route::post('/auth/google/callback', [GoogleController::class, 'handleGoogleCallback'])->name('google.callback');
 Route::any('/auth/google/callback', [GoogleController::class, 'handleGoogleCallback'])->name('google.callback');
 Route::get('/logout', [GoogleController::class, 'logout'])->name('logout');
 
-// Protected event registration route
-// Route::middleware(['check.auth'])->group(function () {
-//     Route::get('/events/sessions/register/{id}', [EventRegistration::class, 'getRegister'])->name('register.page');
-// });
+Route::get('/u/auth/google', [GoogleController::class, 'redirectToGoogle'])->name('google.login');
 
 
 
-Route::post('/events/sessions/register/payment', [EventRegistration::class, 'makePayment'])->name('event.register.payment');
-Route::post('/payment/success', [EventRegistration::class, 'handlePayment'])->name('payment.handle');
-Route::get('/payment/success/{id}', [EventRegistration::class, 'paymentSuccess'])->name('payment.success');
-Route::get('/payment/failure', [EventRegistration::class, 'paymentFailure'])->name('payment.failure');
+Route::get('/events/sessions/register/{id?}', [EventRegistration::class, 'getRegister'])->name('register.page');
+Route::post('/events/sessions/register/', [EventRegistration::class, 'postRegister'])->name('register');
+
+
 
 Route::get('/', [PageControllers::class, 'home'])->name('index');
 Route::get('/events/session', [PageControllers::class, 'EventSession'])->name('events.index');
 Route::get('/events/sessions', [PageControllers::class, 'ab'])->name('events.show');
 Route::get('/events/sessions/{slug}', [PageControllers::class, 'show'])->name('events.show');
+
 
 use App\Http\Controllers\PaymentController;
 

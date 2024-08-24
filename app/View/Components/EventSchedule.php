@@ -7,18 +7,20 @@ use App\Models\Session;
 
 class EventSchedule extends Component
 {
-    public $events;
+    public $departments;
 
     public function __construct()
     {
-        // Fetch the three most recent sessions from the database
-        $this->events = Session::orderBy('date', 'desc')->take(3)->get();
+        // Fetch sessions grouped by department
+        $this->departments = Session::orderBy('date', 'asc')
+            ->get()
+            ->groupBy('department');
     }
 
     public function render()
     {
         return view('components.event-schedule', [
-            'events' => $this->events,
+            'departments' => $this->departments,
         ]);
     }
 }

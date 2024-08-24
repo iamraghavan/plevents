@@ -18,7 +18,7 @@ class CheckAuth
     {
         // Exclude the Google callback route from the authentication check
         if (!Auth::guard('web')->check() && !$request->is('auth/google/callback')) {
-            return redirect()->route('google.callback');
+            return redirect()->route('google.login'); // Assuming 'google.login' is the route to initiate Google login
         }
 
         return $next($request);

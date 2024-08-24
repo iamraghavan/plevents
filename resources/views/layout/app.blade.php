@@ -15,9 +15,15 @@
         <link rel="stylesheet" href="{{ asset("/assets/css/magnific-popup.min.css") }}">
         <link rel="stylesheet" href="{{ asset("/assets/css/style.css") }}">
         <link rel="stylesheet" href="{{ asset("/assets/css/dark.css") }}">
+        <link rel="stylesheet" href="{{ asset("/assets/css/hystmodal/hystmodal.min.css") }}">
 		<link rel="stylesheet" href="{{ asset("/assets/css/responsive.css") }}">
         <meta name="csrf-token" content="{{ csrf_token() }}">
 
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:ital,opsz,wght@0,6..12,200..1000;1,6..12,200..1000&display=swap" rel="stylesheet">
+
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/24.3.4/css/intlTelInput.css" integrity="sha512-E/UQ6jODkpdvwzsowrc5LkTuBkC9oqDx96cUj9v9T5qke/JLFb3RA/PAvhzAA9w4rbMEHf8iR9SHPbYswqdG2Q==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 		<title>EGSPEC Event Conference & Community</title>
 
         <link rel="icon" type="image/png" href="{{ asset("/assets/images/favicon.png") }}">
@@ -43,12 +49,14 @@
         <x-footer />
 
 
+        <script src="https://unpkg.com/micromodal/dist/micromodal.min.js"></script>
 
         <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.14.1/dist/cdn.min.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 
 
 
+        <script src="{{ asset("/assets/css/hystmodal/hystmodal.min.js") }}"></script>
         <script src="{{ asset("/assets/js/jquery.min.js") }}"></script>
         <script src="{{ asset("/assets/js/bootstrap.bundle.min.js") }}"></script>
         <script src="{{ asset("/assets/js/jquery.meanmenu.js") }}"></script>

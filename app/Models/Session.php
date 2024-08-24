@@ -11,6 +11,8 @@ class Session extends Model
 
     protected $table = 'sessions_events';
 
+    protected $dates = ['date'];
+
     protected $fillable = [
         'title',
         'slug',
