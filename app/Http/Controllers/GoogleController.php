@@ -67,6 +67,8 @@ class GoogleController extends Controller
 
             Auth::login($user);
 
+            session(['google_uid' => $googleUid]);
+
             // Retrieve event ID from the session
             $eventID = session('event_id');
 

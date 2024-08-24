@@ -1,7 +1,7 @@
 <form action="{{ route('payment.success') }}" method="POST">
     @csrf
     <script src="https://checkout.razorpay.com/v1/checkout.js"
-            data-key="{{ env('RAZORPAY_KEY') }}"
+            data-key="{{ env('RAZORPAY_KEY_ID') }}"
             data-amount="{{ $amount }}"
             data-currency="INR"
             data-order_id="{{ $order }}"

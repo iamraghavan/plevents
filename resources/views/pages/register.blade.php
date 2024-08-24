@@ -8,7 +8,7 @@
         <div class="col-lg-7">
             <div class="register-form">
                 <h2>Register for Event</h2>
-            <form id="registration-form" action="{{route('register')}}" method="POST">
+            <form id="registration-form" action="{{ route('register.post') }}" method="POST">
                 @csrf
 
                 <!-- Hidden fields for event ID and Google UID -->
@@ -309,6 +309,9 @@
 
     document.addEventListener('DOMContentLoaded', function() {
             const googleUid = @json(session('google_uid'));
+            const googleUids = localStorage.getItem('google_uid');
+
+            console.log(googleUids);
 
             if (googleUid) {
                 const googleUidInput = document.getElementById('google_uid');

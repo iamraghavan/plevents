@@ -22,7 +22,7 @@ class PaymentController extends Controller
 
         $order = $api->order->create([
             'receipt' => 'order_rcptid_11',
-            'amount' => 10000, // Amount in paise (INR 100.00)
+            'amount' => 100, // Amount in paise (INR 100.00)
             'currency' => 'INR'
         ]);
 
