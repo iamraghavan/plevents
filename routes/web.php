@@ -24,8 +24,8 @@ Route::get('/u/auth/google', [GoogleController::class, 'redirectToGoogle'])->nam
 
 
 Route::get('/events/sessions/register/{id?}', [EventRegistration::class, 'getRegister'])->name('register.page');
-Route::post('/events/sessions/register/', [EventRegistration::class, 'postRegister'])->name('register.post');
 
+route::post('/events/sessions/register', [EventRegistration::class, 'postRegister'])->name('register.post');
 
 
 Route::get('/', [PageControllers::class, 'home'])->name('index');

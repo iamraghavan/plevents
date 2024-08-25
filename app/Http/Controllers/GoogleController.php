@@ -17,22 +17,22 @@ class GoogleController extends Controller
 
         $eventID = $request->event_id;
 
-        // Store event ID in the session
+        // Store event ID and intended URL in the session
         session(['event_id' => $eventID]);
 
         if (Auth::check()) {
             return redirect()->route('register.check', ['id' => $eventID]);
         } else {
+            // Store the intended URL in the session
+            session(['url.intended' => url()->previous()]);
             return $this->redirectToGoogle();
         }
     }
-
 
     public function redirectToGoogle()
     {
         return Socialite::driver('google')->redirect();
     }
-
 
     public function handleGoogleCallback(Request $request)
     {
@@ -75,18 +75,20 @@ class GoogleController extends Controller
             // Clear the event ID from the session
             session()->forget('event_id');
 
-            // Redirect to the event registration page
+            // Redirect to the event registration page if event ID is found
             if ($eventID) {
                 return redirect()->route('register.page', ['id' => $eventID]);
-            } else {
-                return redirect('/'); // Redirect to home if event ID is not found
             }
+
+            // Redirect to intended URL if available, else to home
+            $intendedUrl = session('url.intended', '/');
+            session()->forget('url.intended');
+            return redirect($intendedUrl);
+
         } catch (\Exception $e) {
             return redirect()->route('index')->with('error', 'Failed to authenticate with Google.');
         }
     }
-
-
 
     public function logout(Request $request)
     {

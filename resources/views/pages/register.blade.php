@@ -14,6 +14,7 @@
                 <!-- Hidden fields for event ID and Google UID -->
                 <input type="hidden" name="event_id" id="event_id" value="{{ $selectedEvent ? $selectedEvent->id : '' }}">
                 <input type="hidden" id="google_uid" name="google_uid" value="">
+                <input type="hidden" id="payment_id" name="payment_id" value="">
 
                 <!-- Event Title (Dropdown) -->
                 <div class="form-group">
@@ -278,6 +279,41 @@
     <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
 
     <script src="https://cdn.jsdelivr.net/npm/intl-tel-input@24.3.4/build/js/intlTelInput.min.js"></script>
+
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+    <script>
+        document.getElementById('rzp-button').onclick = function (e) {
+            e.preventDefault();
+
+            var options = {
+                "key": "{{ env('RAZORPAY_KEY_ID') }}", // Razorpay API Key
+                "amount": document.getElementById('amount').value * 100, // Amount in paisa
+                "currency": "INR",
+                "name": "EGSPEC EVENT",
+                "description": "Event Registration",
+                "handler": function (response) {
+                    // Set payment_id input value
+                    document.getElementById('payment_id').value = response.razorpay_payment_id;
+
+                    // Submit the form after successful payment
+                    document.getElementById('registration-form').submit();
+                },
+                "prefill": {
+                    "name": "{{ Auth::check() ? Auth::user()->name : old('name') }}",
+                    "email": "{{ Auth::check() ? Auth::user()->email : old('email') }}",
+                    "contact": document.getElementById('phone').value,
+                },
+                "theme": {
+                    "color": "#528FF0"
+                }
+            };
+
+            var rzp = new Razorpay(options);
+            rzp.open();
+        }
+    </script>
+
+
     <script>
 
 
@@ -518,5 +554,34 @@ card.appendChild(logo);
 
     </script>
 
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+<script>
+    document.getElementById('rzp-button').onclick = function(e) {
+        e.preventDefault();
+
+        var options = {
+            "key": "{{ env('RAZORPAY_KEY_ID') }}", // Razorpay key
+            "amount": document.getElementById('amount').value * 100, // Amount in paisa
+            "currency": "INR",
+            "name": "EGSPEC EVENT",
+            "description": "Event Registration",
+            "handler": function (response){
+                // On successful payment
+                document.getElementById('payment_id').value = response.razorpay_payment_id;
+                document.getElementById('registration-form').submit();
+            },
+            "prefill": {
+                "name": "{{ Auth::check() ? Auth::user()->name : old('name') }}",
+                "email": "{{ Auth::check() ? Auth::user()->email : old('email') }}",
+                "contact": document.getElementById('phone').value,
+            },
+            "theme": {
+                "color": "#528FF0"
+            }
+        };
+        var rzp = new Razorpay(options);
+        rzp.open();
+    }
+</script>
 
     @endsection
