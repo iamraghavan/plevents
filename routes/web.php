@@ -9,6 +9,24 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\SessionController;
 use Illuminate\Support\Facades\Auth;
 
+
+use Razorpay\Api\Api;
+
+Route::get('/test-razorpay', function () {
+    try {
+        $api = new Api(env('RAZORPAY_KEY_ID'), env('RAZORPAY_KEY_SECRET'));
+        $order = $api->order->create([
+            'receipt' => 'order_rcptid_11',
+            'amount' => 1000, // 1000 paise = INR 10
+            'currency' => 'INR'
+        ]);
+        return response()->json($order);
+    } catch (\Exception $e) {
+        return response()->json(['error' => $e->getMessage()], 500);
+    }
+});
+
+
 $ip = session('ip');
 $country = session('country');
 $region = session('region');
@@ -25,8 +43,9 @@ Route::get('/u/auth/google', [GoogleController::class, 'redirectToGoogle'])->nam
 
 Route::get('/events/sessions/register/{id?}', [EventRegistration::class, 'getRegister'])->name('register.page');
 
-route::post('/events/sessions/register', [EventRegistration::class, 'postRegister'])->name('register.post');
+Route::post('/events/sessions/register', [EventRegistration::class, 'postRegister'])->name('register.post');
 
+Route::get('/events/{id}', [EventRegistration::class, 'showDetailss']);
 
 Route::get('/', [PageControllers::class, 'home'])->name('index');
 Route::get('/events/session', [PageControllers::class, 'EventSession'])->name('events.index');
@@ -42,6 +61,7 @@ Route::post('/payment', [PaymentController::class, 'makePayment'])->name('paymen
 Route::post('/payment/success', [PaymentController::class, 'handlePayment'])->name('payment.handle');
 Route::get('/payment/success', [PaymentController::class, 'paymentSuccess'])->name('payment.success');
 Route::get('/payment/failure', [PaymentController::class, 'paymentFailure'])->name('payment.failure');
+Route::post('/create-razorpay-order', [PaymentController::class, 'createOrder']);
 
 
 // Admin routes

@@ -71,4 +71,24 @@ class PaymentController extends Controller
     {
         return view('payment-failure'); // Render the failure page
     }
+
+
+    public function createOrder(Request $request)
+    {
+        try {
+            $api = new Api(env('RAZORPAY_KEY_ID'), env('RAZORPAY_KEY_SECRET'));
+
+            $orderData = [
+                'receipt'         => 'order_rcptid_11',
+                'amount'          => $request->amount, // Amount in paise
+                'currency'        => 'INR',
+                'payment_capture' => 1 // Auto capture payment
+            ];
+
+            $order = $api->order->create($orderData); // Creates order
+            return response()->json(['order_id' => $order['id']]);
+        } catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
+    }
 }

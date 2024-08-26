@@ -18,6 +18,7 @@
         <link rel="stylesheet" href="{{ asset("/assets/css/hystmodal/hystmodal.min.css") }}">
 		<link rel="stylesheet" href="{{ asset("/assets/css/responsive.css") }}">
         <meta name="csrf-token" content="{{ csrf_token() }}">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
 
         <link rel="preconnect" href="https://fonts.googleapis.com">
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -48,11 +49,12 @@
 
         <x-footer />
 
-
+        <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
         <script src="https://unpkg.com/micromodal/dist/micromodal.min.js"></script>
 
         <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.14.1/dist/cdn.min.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
 
 
 

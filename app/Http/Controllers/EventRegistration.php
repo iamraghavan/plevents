@@ -46,59 +46,71 @@ class EventRegistration extends Controller
     public function postRegister(Request $request)
     {
 
-        // dd($request->all());
-        // Validate the incoming request data
+        Log::info('Request Data:', $request->all());
+
         $validatedData = $request->validate([
-            'event_id' => 'required',
+            'event_id' => 'required|integer',
+            'google_uid' => 'required|integer',
             'name' => 'required|string|max:255',
             'email' => 'required|email|max:255',
-            'phone' => 'required|string|max:20',
+            'phone' => 'required|string|max:15',
             'address' => 'required|string|max:255',
             'country' => 'required|string|max:100',
             'state' => 'required|string|max:100',
             'city' => 'required|string|max:100',
             'pincode' => 'required|string|max:10',
-            'payment_id' => 'required|string',
+            'amount' => 'required|numeric|min:1',
+            'payment_id' => 'required|string|max:100',
+            'order_id' => 'required|string|max:100',
+            'invoice_id' => 'nullable|string|max:100', // Make invoice_id optional
         ]);
 
-        // Initialize Razorpay API with the keys from the .env file
-        $api = new Api(env('RAZORPAY_KEY_ID'), env('RAZORPAY_KEY_SECRET'));
 
-        // Fetch payment details from Razorpay
-        try {
-            $payment = $api->payment->fetch($request->input('payment_id'));
-        } catch (\Exception $e) {
-            return redirect()->back()->withErrors('Payment verification failed. Please try again.');
-        }
+        Log::info('Validated Data:', $validatedData);
 
-        // Check if the payment is successful
-        if ($payment->status !== 'captured') {
-            return redirect()->back()->withErrors('Payment not completed. Please try again.');
-        }
+        // Generate event_registration_id based on the format EGSPEC/event_id/DDMMYYAutoincrement
+        $eventDate = date('dmy');
+        $lastRegistration = EventRegistrationMod::where('event_id', $validatedData['event_id'])
+            ->orderBy('id', 'desc')
+            ->first();
 
-        // Store the registration and payment details in the database
-        $registration = EventRegistrationMod::create([
-            'event_id' => $request->input('event_id'),
-            'user_id' => Auth::id(),
-            'name' => $request->input('name'),
-            'email' => $request->input('email'),
-            'phone' => $request->input('phone'),
-            'address' => $request->input('address'),
-            'country' => $request->input('country'),
-            'state' => $request->input('state'),
-            'city' => $request->input('city'),
-            'pincode' => $request->input('pincode'),
-            'amount' => $payment->amount / 100, // Convert from paise to INR
-            'payment_id' => $payment->id,
-            'order_id' => $payment->order_id,
-            'invoice_id' => $payment->invoice_id,
-        ]);
+        $incrementId = $lastRegistration ? (int)substr($lastRegistration->event_registration_id, -4) + 1 : 1;
+        $incrementId = str_pad($incrementId, 4, '0', STR_PAD_LEFT); // Ensure it's always 4 digits
 
-        // Redirect to a thank you page or any other page
-        return view('payment-success')->with('success', 'Registration completed successfully!');
+        $eventRegistrationId = "EGSPEC/{$validatedData['event_id']}/{$eventDate}{$incrementId}";
+
+        // Generate secure invoice_id if it's not provided
+        $invoiceId = $validatedData['invoice_id'] ?? strtoupper(uniqid('INV-', true));
+
+        // Use 'google_uid' instead of 'user_id'
+        $registration = new EventRegistrationMod();
+        $registration->event_registration_id = $eventRegistrationId;
+        $registration->event_id = $validatedData['event_id'];
+        $registration->user_id = $validatedData['google_uid']; // Updated field
+        $registration->name = $validatedData['name'];
+        $registration->email = $validatedData['email'];
+        $registration->phone = $validatedData['phone'];
+        $registration->address = $validatedData['address'];
+        $registration->country = $validatedData['country'];
+        $registration->state = $validatedData['state'];
+        $registration->city = $validatedData['city'];
+        $registration->pincode = $validatedData['pincode'];
+        $registration->amount = $validatedData['amount'];
+        $registration->payment_id = $validatedData['payment_id'];
+        $registration->order_id = $validatedData['order_id'];
+        $registration->invoice_id = $invoiceId;
+        $registration->save();
+
+        return response()->json(['success' => true, 'message' => 'Registration successful']);
     }
 
 
+
+    public function showDetailss($id)
+    {
+        $event = Session::findOrFail($id);
+        return response()->json($event);
+    }
 
     public function showDetails($id)
     {

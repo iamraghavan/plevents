@@ -8,13 +8,14 @@
         <div class="col-lg-7">
             <div class="register-form">
                 <h2>Register for Event</h2>
-            <form id="registration-form" action="{{ route('register.post') }}" method="POST">
+            <form id="registration-form" action="">
                 @csrf
 
                 <!-- Hidden fields for event ID and Google UID -->
                 <input type="hidden" name="event_id" id="event_id" value="{{ $selectedEvent ? $selectedEvent->id : '' }}">
                 <input type="hidden" id="google_uid" name="google_uid" value="">
-                <input type="hidden" id="payment_id" name="payment_id" value="">
+
+                <input type="hidden" name="totalValue_rj" id='totalValue_rj' >
 
                 <!-- Event Title (Dropdown) -->
                 <div class="form-group">
@@ -22,7 +23,7 @@
                     <select class="form-control" id="event_title" name="event_title" required>
                         <option value="">Select an Event</option>
                         @foreach($events as $event)
-                            <option value="{{ $event->id }}" {{ $selectedEvent->id == $event->id ? 'selected' : '' }}>
+                            <option value="{{ $event->title }}" data-amount="{{ $event->amount }}" data-price-type="{{ $event->price_type }}" {{ $selectedEvent->id == $event->id ? 'selected' : '' }}>
                                 {{ $event->title }}
                             </option>
                         @endforeach
@@ -100,13 +101,14 @@
                 <p class="description">By registering for this event, you agree to the <a href="#terms-and-conditions">terms and conditions</a> and <a href="#payment-policy">payment policy</a> outlined below. Please ensure you have read and understood them before proceeding with your registration.</p>
                 <!-- Submit Button -->
 
-                <button type="submit" class="default-btn">Register <span></span></button>
+                <button type="submit" class="default-btn" >Register <span></span></button>
 
             </form>
 
 
             </div>
         </div>
+
 
 
 
@@ -206,6 +208,26 @@
                         </div>
                     </div>
                 </div>
+
+                <div class=" p-3">
+                    <div class="d-flex flex-row justify-content-between">
+                        <div class="d-flex flex-column" id="total_hide">
+                            <h5 class="card-title">Summary</h5>
+                            <p>Price (Per Person): ₹<span id="item-price"></span></p>
+                            <p id="total-amount">Total Amount: ₹0.00</p>
+                            <p class="text-muted">Prices are excluding Booking Fees *</p>
+                            <p class="text-muted">2% Applicable on all transactions (Platform fees) *</p>
+                            <p class="text-muted">* 18% GST applicable</p>
+                        </div>
+                        <p id="event-summary" class="text-muted fs-25" style="
+    color: var(--bs-success) !important;
+"></p>
+                        </div>
+
+                        <!-- Payment Form -->
+
+                    </div>
+                </div>
             </div>
 
         </div>
@@ -216,6 +238,85 @@
 
         </div>
     </div>
+
+
+
+    <script>
+  const rj_bookingFeePercentage = 2; // booking fee percentage
+  const rj_gstPercentage = 18; // GST percentage
+
+  document.addEventListener("DOMContentLoaded", function() {
+    const selectElement = document.querySelector('select');
+    const totalAmountElement = document.getElementById("total-amount");
+    const itemPriceElement = document.getElementById("item-price");
+    const eventSummaryElement = document.getElementById("event-summary");
+    const paymentButtonElement = document.getElementById("payment-button");
+    const footerMessageElement = document.getElementById("event-summary");
+    const summaryDiv = document.getElementById("total_hide"); // Use ID to select the summary div
+    const mudiyallLastElement = document.getElementById("mudiyall_last_element_id");
+
+    const totalValueRjInput = document.getElementById('totalValue_rj');
+
+
+    selectElement.addEventListener('change', function() {
+      const selectedOption = selectElement.options[selectElement.selectedIndex];
+      const selectedAmount = parseFloat(selectedOption.getAttribute('data-amount'));
+      const rj_itemPrice = selectedAmount; // set item price to selected amount
+      const isFreeEvent = selectedOption.getAttribute('data-price-type') === 'free';
+
+      if (!isNaN(selectedAmount)) {
+        if (selectedAmount === 0 || isFreeEvent) {
+            summaryDiv.style.setProperty('display', 'none', 'important');
+
+          footerMessageElement.textContent = "This event is Free. To secure your spot, please click 'Register' to complete your registration process.";
+        } else {
+          // Calculate total price and update summary
+          const totalPrice = calculateTotalPrice(selectedAmount);
+          updateSummary(totalPrice, rj_itemPrice);
+
+          footerMessageElement.textContent = "";
+        }
+      }
+    });
+
+    // Initialize the summary with the default selected amount
+    const initialSelectedOption = selectElement.options[selectElement.selectedIndex];
+    const initialSelectedAmount = parseFloat(initialSelectedOption.getAttribute('data-amount'));
+    const initialRjItemPrice = initialSelectedAmount; // set initial item price
+    const isInitialFreeEvent = initialSelectedOption.getAttribute('data-price-type') === 'free';
+
+    if (!isNaN(initialSelectedAmount)) {
+      if (initialSelectedAmount === 0 || isInitialFreeEvent) {
+        summaryDiv.style.setProperty('display', 'none', 'important');
+
+        footerMessageElement.textContent = "This event is Free. To secure your spot, please click 'Register' to complete your registration process.";
+      } else {
+        // Calculate total price and update summary
+        const initialTotalPrice = calculateTotalPrice(initialSelectedAmount);
+        updateSummary(initialTotalPrice, initialRjItemPrice);
+
+        footerMessageElement.textContent = "";
+      }
+    }
+
+    function calculateTotalPrice(amount) {
+      const bookingFee = (amount * rj_bookingFeePercentage) / 100;
+      const gst = (amount * rj_gstPercentage) / 100;
+      const totalPrice = amount + bookingFee + gst;
+      return totalPrice;
+    }
+
+    function updateSummary(totalPrice, itemPrice) {
+      const formattedTotalPrice = totalPrice.toFixed(2);
+      totalAmountElement.textContent = `Total Amount: ₹${formattedTotalPrice}`;
+      itemPriceElement.textContent = `${itemPrice.toFixed(2)}`;
+      totalValueRjInput.value = `₹${formattedTotalPrice}`;
+    }
+
+
+  });
+</script>
+
 
     <style>
         .bg-blue {
@@ -280,38 +381,7 @@
 
     <script src="https://cdn.jsdelivr.net/npm/intl-tel-input@24.3.4/build/js/intlTelInput.min.js"></script>
 
-    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
-    <script>
-        document.getElementById('rzp-button').onclick = function (e) {
-            e.preventDefault();
 
-            var options = {
-                "key": "{{ env('RAZORPAY_KEY_ID') }}", // Razorpay API Key
-                "amount": document.getElementById('amount').value * 100, // Amount in paisa
-                "currency": "INR",
-                "name": "EGSPEC EVENT",
-                "description": "Event Registration",
-                "handler": function (response) {
-                    // Set payment_id input value
-                    document.getElementById('payment_id').value = response.razorpay_payment_id;
-
-                    // Submit the form after successful payment
-                    document.getElementById('registration-form').submit();
-                },
-                "prefill": {
-                    "name": "{{ Auth::check() ? Auth::user()->name : old('name') }}",
-                    "email": "{{ Auth::check() ? Auth::user()->email : old('email') }}",
-                    "contact": document.getElementById('phone').value,
-                },
-                "theme": {
-                    "color": "#528FF0"
-                }
-            };
-
-            var rzp = new Razorpay(options);
-            rzp.open();
-        }
-    </script>
 
 
     <script>
@@ -553,35 +623,104 @@ card.appendChild(logo);
 
 
     </script>
+   <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+   <script>
 
-<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
-<script>
-    document.getElementById('rzp-button').onclick = function(e) {
+
+ document.addEventListener('DOMContentLoaded', function() {
+    const registrationForm = document.getElementById('registration-form');
+
+    registrationForm.addEventListener('submit', async function(e) {
         e.preventDefault();
 
-        var options = {
-            "key": "{{ env('RAZORPAY_KEY_ID') }}", // Razorpay key
-            "amount": document.getElementById('amount').value * 100, // Amount in paisa
-            "currency": "INR",
-            "name": "EGSPEC EVENT",
-            "description": "Event Registration",
-            "handler": function (response){
-                // On successful payment
-                document.getElementById('payment_id').value = response.razorpay_payment_id;
-                document.getElementById('registration-form').submit();
-            },
-            "prefill": {
-                "name": "{{ Auth::check() ? Auth::user()->name : old('name') }}",
-                "email": "{{ Auth::check() ? Auth::user()->email : old('email') }}",
-                "contact": document.getElementById('phone').value,
-            },
-            "theme": {
-                "color": "#528FF0"
+        try {
+            // Get and validate form data
+            const formData = new FormData(this);
+            const totalValue = parseFloat(formData.get('totalValue_rj').replace('₹', '').trim());
+
+            if (isNaN(totalValue) || totalValue <= 0) {
+                throw new Error('Invalid total value');
             }
-        };
-        var rzp = new Razorpay(options);
-        rzp.open();
-    }
+
+            // Display form data for debugging
+            formData.forEach((value, key) => {
+                console.log(`${key}: ${value}`);
+            });
+
+            // Create a new Razorpay order on the server
+            const orderResponse = await axios.post('/create-razorpay-order', {
+                amount: totalValue * 100 // Convert amount to paise
+            }, {
+                headers: {
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                }
+            });
+
+            const { order_id } = orderResponse.data;
+
+            if (!order_id) {
+                throw new Error('Failed to create order');
+            }
+
+            // Configure Razorpay options
+            const options = {
+                key: "{{ env('RAZORPAY_KEY_ID') }}", // Razorpay key ID from env
+                amount: totalValue * 100, // Amount in paise
+                currency: "INR",
+                name: "{{ config('app.name') }}",
+                description: "Event Registration",
+                order_id: order_id,
+                handler: async function(response) {
+                    try {
+                        // Log payment details
+                        console.log('Payment ID:', response.razorpay_payment_id);
+                        console.log('Order ID:', response.razorpay_order_id);
+
+                        // Append payment details to form data
+                        formData.append('payment_id', response.razorpay_payment_id);
+                        formData.append('order_id', response.razorpay_order_id);
+
+                        // Send data to server for registration processing
+                        await axios.post('/events/sessions/register', formData, {
+                            headers: {
+                                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                            }
+                        });
+
+                        // Show success message and redirect
+                        Swal.fire('Success', 'Your registration was successful!', 'success').then(() => {
+                            window.location.href = '/events/thank-you';
+                        });
+                    } catch (error) {
+                        console.error('Error during registration:', error);
+                        Swal.fire('Error', 'An error occurred while processing your registration.', 'error');
+                    }
+                },
+                prefill: {
+                    name: formData.get('name'),
+                    email: formData.get('email'),
+                    contact: formData.get('phone')
+                },
+                theme: {
+                    color: "#3399cc"
+                }
+            };
+
+            const rzp1 = new Razorpay(options);
+            rzp1.open();
+        } catch (error) {
+            console.error('Error initiating payment:', error);
+            Swal.fire('Error', error.message || 'An error occurred while initiating the payment.', 'error');
+        }
+    });
+});
+
+
+
+
+
 </script>
+
+
 
     @endsection
